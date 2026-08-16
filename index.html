@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhotoXys Studio | Online Graphic Design & Photo Editing Suite</title>
+  <meta name="description" content="PhotoXys - Professional browser-based graphic design studio and Photoshop-grade photo editor with multi-layer canvas, filters, templates, stickers, and vector shapes.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Montserrat:wght@500;700;800;900&family=Outfit:wght@500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Poppins:wght@500;700;800&display=swap" rel="stylesheet">
+
+  <!-- Design System -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ================= HOME LOBBY ================= -->
+  <div id="homeLobby">
+    <nav class="lobby-nav">
+      <div class="brand-box">
+        <div class="brand-icon-mark">PX</div>
+        <div class="brand-text">Photo<span>Xys</span></div>
+      </div>
+      <div class="lobby-nav-actions">
+        <button class="btn-primary" id="lobbyOpenEditorBtn">Open Editor ➜</button>
+      </div>
+    </nav>
+
+    <section class="lobby-hero">
+      <h1>Design anything.<br>PhotoXys Studio.</h1>
+      <p>Browser-based graphic design &amp; Photoshop-grade photo editing with a multi-layer canvas, AI tools, filters, stickers, and templates — all on a crisp white canvas.</p>
+      <div class="lobby-cta-row">
+        <button class="btn-primary" id="lobbyCreateBlankBtn">Start with a blank canvas</button>
+        <button class="btn-secondary" id="lobbyTemplatesBtn">Browse templates</button>
+      </div>
+    </section>
+
+    <section class="lobby-section">
+      <div class="lobby-section-head">
+        <h2>Start a new project</h2>
+        <p>Blank white canvases, ready in one click.</p>
+      </div>
+      <div class="lobby-project-grid" id="lobbyProjectGrid">
+        <!-- Populated by app.js -->
+      </div>
+    </section>
+
+    <section class="lobby-section">
+      <div class="lobby-section-head">
+        <h2>Design templates</h2>
+        <p>Jump-start with a professionally designed template.</p>
+      </div>
+      <div class="lobby-template-grid" id="lobbyTemplatesGrid">
+        <!-- Populated by app.js -->
+      </div>
+    </section>
+
+    <footer class="lobby-footer">
+      <span class="brand-text" style="color: var(--text-muted);">Photo<span style="color: var(--brand-accent);">Xys</span></span>
+      <span>Free in-browser design &amp; photo editing · © 2026</span>
+    </footer>
+  </div>
+
+  <div class="studio-wrapper hidden">
+    <!-- ================= TOPBAR HEADER ================= -->
+    <header class="studio-topbar">
+      <!-- Brand & Project Title -->
+      <div class="brand-box" id="homeBtn" title="Back to Home">
+        <div class="brand-icon-mark">PX</div>
+        <div class="brand-text">Photo<span>Xys</span></div>
+      </div>
+
+      <!-- Center Controls (Presets, Undo/Redo, Zoom) -->
+      <div class="topbar-center-tools">
+        <!-- Canvas Dimension Presets -->
+        <select id="canvasSizePresetSelect" class="preset-select">
+          <option value="sq1080">Instagram Post (1080 × 1080)</option>
+          <option value="story">Instagram Story / Reel (1080 × 1920)</option>
+          <option value="yt">YouTube Thumbnail (1280 × 720)</option>
+          <option value="tw">Twitter / X Header (1500 × 500)</option>
+          <option value="fb">Facebook Post (1200 × 630)</option>
+        </select>
+
+        <!-- History Undo / Redo -->
+        <div class="tool-btn-group">
+          <button id="undoBtn" class="top-action-btn" title="Undo (Ctrl+Z)" disabled>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 7v6h6"></path>
+              <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path>
+            </svg>
+          </button>
+          <button id="redoBtn" class="top-action-btn" title="Redo (Ctrl+Y)" disabled>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 7v6h-6"></path>
+              <path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Zoom Controls -->
+        <div class="tool-btn-group">
+          <button id="zoomOutBtn" class="top-action-btn" title="Zoom Out">-</button>
+          <span id="zoomPercentageText" style="font-size: 0.8rem; font-weight: 700; font-family: var(--font-mono); padding: 0 0.35rem;">60%</span>
+          <button id="zoomInBtn" class="top-action-btn" title="Zoom In">+</button>
+          <button id="zoomFitBtn" class="top-action-btn" title="Fit to Viewport">Fit</button>
+        </div>
+      </div>
+
+      <!-- Right Actions (Dark/Light Switch, Pro Subscription, Export) -->
+      <div class="topbar-right-actions">
+        <!-- Dedicated Light & Dark Button -->
+        <button id="themeToggleBtn" class="theme-switch-btn" title="Toggle Light & Dark Mode">
+          <span id="themeToggleIcon">☀️</span>
+          <span id="themeToggleLabel">Light Mode</span>
+        </button>
+
+        <!-- Subscription Pro Trigger -->
+        <button id="proSubscriptionBtn" class="btn-pro-subscription">
+          <span>👑</span>
+          <span id="proBtnText">Try Pro</span>
+        </button>
+
+        <!-- Export Modal Trigger -->
+        <button id="exportModalBtn" class="btn-export-main">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>Export</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ================= STUDIO BODY ================= -->
+    <div class="studio-body">
+      <!-- Left Sidebar: Dock Buttons + Expandable Drawer -->
+      <aside class="studio-left-sidebar">
+        <!-- Vertical Tab Icons -->
+        <div class="dock-icon-strip">
+          <button class="dock-tab-btn active" data-tab="templates">
+            <span class="tab-icon">🎨</span>
+            <span>Templates</span>
+          </button>
+          <button class="dock-tab-btn" data-tab="elements">
+            <span class="tab-icon">🔷</span>
+            <span>Shapes</span>
+          </button>
+          <button class="dock-tab-btn" data-tab="stickers">
+            <span class="tab-icon">⭐</span>
+            <span>Stickers</span>
+          </button>
+          <button class="dock-tab-btn" data-tab="text">
+            <span class="tab-icon">🔤</span>
+            <span>Text</span>
+          </button>
+          <button class="dock-tab-btn" data-tab="photos">
+            <span class="tab-icon">🖼️</span>
+            <span>Photos</span>
+          </button>
+          <button class="dock-tab-btn" data-tab="filters">
+            <span class="tab-icon">🪄</span>
+            <span>Filters</span>
+          </button>
+          <button class="dock-tab-btn" data-tab="generate">
+            <span class="tab-icon">🤖</span>
+            <span>AI</span>
+          </button>
+          <button class="dock-tab-btn" data-tab="edit">
+            <span class="tab-icon">✂️</span>
+            <span>Edit</span>
+          </button>
+          <button class="dock-tab-btn" data-tab="draw">
+            <span class="tab-icon">🖌️</span>
+            <span>Draw</span>
+          </button>
+        </div>
+
+        <!-- 1. Templates Drawer -->
+        <div id="dockPanel_templates" class="dock-drawer-panel">
+          <div class="drawer-header">
+            <h3>Design Templates</h3>
+            <p>Pick a pre-built layout to start creating immediately.</p>
+          </div>
+
+          <!-- Search Bar -->
+          <div class="dock-search-box">
+            <span>🔍</span>
+            <input type="text" id="templateSearchInput" placeholder="Search templates (sale, tech, art)...">
+          </div>
+
+          <div class="templates-grid" id="templatesListContainer">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- 2. Expanded Shapes Drawer -->
+        <div id="dockPanel_elements" class="dock-drawer-panel hidden">
+          <div class="drawer-header">
+            <h3>Shapes & Geometry</h3>
+            <p>Click any shape to add to your canvas.</p>
+          </div>
+
+          <!-- Search Shapes Bar -->
+          <div class="dock-search-box">
+            <span>🔍</span>
+            <input type="text" id="shapeSearchInput" placeholder="Search shapes (star, circle, arrow)...">
+          </div>
+
+          <div class="shapes-grid" id="shapesGridContainer">
+            <div class="add-shape-card" data-shape="rect" data-name="rectangle">
+              <span class="shape-icon">⬛</span>
+              <span>Rectangle</span>
+            </div>
+            <div class="add-shape-card" data-shape="roundedRect" data-name="rounded">
+              <span class="shape-icon">🔲</span>
+              <span>Rounded</span>
+            </div>
+            <div class="add-shape-card" data-shape="circle" data-name="circle">
+              <span class="shape-icon">⚪</span>
+              <span>Circle</span>
+            </div>
+            <div class="add-shape-card" data-shape="triangle" data-name="triangle">
+              <span class="shape-icon">▲</span>
+              <span>Triangle</span>
+            </div>
+            <div class="add-shape-card" data-shape="diamond" data-name="diamond rhombus">
+              <span class="shape-icon">🔶</span>
+              <span>Diamond</span>
+            </div>
+            <div class="add-shape-card" data-shape="pentagon" data-name="pentagon">
+              <span class="shape-icon">⬟</span>
+              <span>Pentagon</span>
+            </div>
+            <div class="add-shape-card" data-shape="hexagon" data-name="hexagon">
+              <span class="shape-icon">⬡</span>
+              <span>Hexagon</span>
+            </div>
+            <div class="add-shape-card" data-shape="octagon" data-name="octagon">
+              <span class="shape-icon">🛑</span>
+              <span>Octagon</span>
+            </div>
+            <div class="add-shape-card" data-shape="star" data-name="star">
+              <span class="shape-icon">⭐</span>
+              <span>5-Star</span>
+            </div>
+            <div class="add-shape-card" data-shape="badgeBurst" data-name="badge burst sale starburst">
+              <span class="shape-icon">💥</span>
+              <span>Starburst</span>
+            </div>
+            <div class="add-shape-card" data-shape="arrowRight" data-name="arrow right direction">
+              <span class="shape-icon">➔</span>
+              <span>Arrow Right</span>
+            </div>
+            <div class="add-shape-card" data-shape="arrowLeft" data-name="arrow left back">
+              <span class="shape-icon">⬅️</span>
+              <span>Arrow Left</span>
+            </div>
+            <div class="add-shape-card" data-shape="speechBubble" data-name="speech bubble chat message">
+              <span class="shape-icon">💬</span>
+              <span>Bubble</span>
+            </div>
+            <div class="add-shape-card" data-shape="shield" data-name="shield security verified">
+              <span class="shape-icon">🛡️</span>
+              <span>Shield</span>
+            </div>
+            <div class="add-shape-card" data-shape="heart" data-name="heart love like">
+              <span class="shape-icon">❤️</span>
+              <span>Heart</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Stickers & Badges Drawer -->
+        <div id="dockPanel_stickers" class="dock-drawer-panel hidden">
+          <div class="drawer-header">
+            <h3>Stickers & Badges</h3>
+            <p>Click any sticker or badge to stamp on your canvas.</p>
+          </div>
+
+          <!-- Search Stickers Bar -->
+          <div class="dock-search-box">
+            <span>🔍</span>
+            <input type="text" id="stickerSearchInput" placeholder="Search stickers (fire, 50% off, hot)...">
+          </div>
+
+          <div style="font-size: 0.8rem; font-weight: 700; margin-bottom: 0.65rem; color: var(--text-muted);">Sale & Promo Badges</div>
+          <div class="stickers-grid" id="badgeStickersContainer" style="margin-bottom: 1.25rem;">
+            <div class="sticker-item-card" data-sticker-type="badge" data-badge-text="50% OFF" data-color="#ec4899" data-name="50% off discount sale">
+              <span class="sticker-badge-tag" style="background: #ec4899;">50% OFF</span>
+            </div>
+            <div class="sticker-item-card" data-sticker-type="badge" data-badge-text="SALE!" data-color="#dc2626" data-name="sale discount promo">
+              <span class="sticker-badge-tag" style="background: #dc2626;">SALE!</span>
+            </div>
+            <div class="sticker-item-card" data-sticker-type="badge" data-badge-text="HOT 🔥" data-color="#f97316" data-name="hot fire trending">
+              <span class="sticker-badge-tag" style="background: #f97316;">HOT 🔥</span>
+            </div>
+            <div class="sticker-item-card" data-sticker-type="badge" data-badge-text="NEW" data-color="#10b981" data-name="new modern fresh">
+              <span class="sticker-badge-tag" style="background: #10b981;">NEW</span>
+            </div>
+            <div class="sticker-item-card" data-sticker-type="badge" data-badge-text="VIP" data-color="#8b5cf6" data-name="vip premium exclusive">
+              <span class="sticker-badge-tag" style="background: #8b5cf6;">VIP</span>
+            </div>
+            <div class="sticker-item-card" data-sticker-type="badge" data-badge-text="BESTSELLER" data-color="#2563eb" data-name="bestseller popular top">
+              <span class="sticker-badge-tag" style="background: #2563eb; font-size: 0.65rem;">BESTSELLER</span>
+            </div>
+          </div>
+
+          <div style="font-size: 0.8rem; font-weight: 700; margin-bottom: 0.65rem; color: var(--text-muted);">Graphic Emoji Stickers</div>
+          <div class="stickers-grid" id="emojiStickersContainer">
+            <div class="sticker-item-card" data-sticker-type="emoji" data-emoji="🔥" data-name="fire flame hot">
+              <span style="font-size: 2rem;">🔥</span>
+            </div>
+            <div class="sticker-item-card" data-sticker-type="emoji" data-emoji="🚀" data-name="rocket launch speed">
+              <span style="font-size: 2rem;">🚀</span>
+            </div>
+            <div class="sticker-item-card" data-sticker-type="emoji" data-emoji="⚡" data-name="lightning bolt energy">
+              <span style="font-size: 2rem;">⚡</span>
+            </div>
+            <div class="sticker-item-card" data-sticker-type="emoji" data-emoji="👑" data-name="crown king queen royal pro">
+              <span style="font-size: 2rem;">👑</span>
+            </div>
+            <div class="sticker-item-card" data-sticker-type="emoji" data-emoji="✨" data-name="sparkles magic stars shine">
+              <span style="font-size: 2rem;">✨</span>
+            </div>
+            <div class="sticker-item-card" data-sticker-type="emoji" data-emoji="💎" data-name="diamond gem luxury crystal">
+              <span style="font-size: 2rem;">💎</span>
+            </div>
+            <div class="sticker-item-card" data-sticker-type="emoji" data-emoji="🎯" data-name="target goal bullseye marketing">
+              <span style="font-size: 2rem;">🎯</span>
+            </div>
+            <div class="sticker-item-card" data-sticker-type="emoji" data-emoji="💯" data-name="100 hundred perfect score">
+              <span style="font-size: 2rem;">💯</span>
+            </div>
+            <div class="sticker-item-card" data-sticker-type="emoji" data-emoji="🎉" data-name="party celebration confetti celebrate">
+              <span style="font-size: 2rem;">🎉</span>
+            </div>
+            <div class="sticker-item-card" data-sticker-type="emoji" data-emoji="💡" data-name="lightbulb idea creative brain">
+              <span style="font-size: 2rem;">💡</span>
+            </div>
+            <div class="sticker-item-card" data-sticker-type="emoji" data-emoji="🏆" data-name="trophy award winner first">
+              <span style="font-size: 2rem;">🏆</span>
+            </div>
+            <div class="sticker-item-card" data-sticker-type="emoji" data-emoji="🔮" data-name="crystal ball future magic neon">
+              <span style="font-size: 2rem;">🔮</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Text & Typography Drawer -->
+        <div id="dockPanel_text" class="dock-drawer-panel hidden">
+          <div class="drawer-header">
+            <h3>Typography Studio</h3>
+            <p>Add editable headline and body typography presets.</p>
+          </div>
+          <div class="text-presets-col">
+            <button class="add-text-preset-btn" data-text-type="heading">
+              <div style="font-family: 'Outfit'; font-size: 1.5rem; font-weight: 800;">Add a Heading</div>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">Bold display headline</span>
+            </button>
+            <button class="add-text-preset-btn" data-text-type="subheading">
+              <div style="font-family: 'Plus Jakarta Sans'; font-size: 1.1rem; font-weight: 600;">Add a Subheading</div>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">Medium supporting title</span>
+            </button>
+            <button class="add-text-preset-btn" data-text-type="neon">
+              <div style="font-family: 'Outfit'; font-size: 1.25rem; font-weight: 800; color: #ec4899; text-shadow: 0 0 10px #ec4899;">NEON GLOW EFFECT</div>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">Luminescent night style</span>
+            </button>
+            <button class="add-text-preset-btn" data-text-type="body">
+              <div style="font-family: 'Plus Jakarta Sans'; font-size: 0.95rem; font-weight: 400;">Add Body Text</div>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">Standard paragraph copy</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 5. Photos & Uploads Drawer -->
+        <div id="dockPanel_photos" class="dock-drawer-panel hidden">
+          <div class="drawer-header">
+            <h3>Photos & Uploads</h3>
+            <p>Upload your own images or pick from stock graphics.</p>
+          </div>
+
+          <label for="imageUploadInput" class="btn-primary" style="display: block; text-align: center; margin-bottom: 1.25rem; cursor: pointer;">
+            📁 Upload Image (PNG/JPG)
+          </label>
+          <input type="file" id="imageUploadInput" accept="image/*" class="hidden">
+
+          <div style="font-size: 0.8rem; font-weight: 700; margin-bottom: 0.65rem; color: var(--text-muted);">Stock Creative Assets</div>
+          <div class="stock-photos-grid" id="stockPhotosListContainer">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- 6. Photoshop Filters & Adjustments Drawer -->
+        <div id="dockPanel_filters" class="dock-drawer-panel hidden">
+          <div class="drawer-header">
+            <h3>Photoshop Adjustments</h3>
+            <p>Select an image layer to apply parametric pixel filters and presets.</p>
+          </div>
+
+          <div style="font-size: 0.8rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-muted);">Creative LUT Presets</div>
+          <div class="presets-lut-grid">
+            <div class="preset-filter-card" data-preset="none">Normal</div>
+            <div class="preset-filter-card" data-preset="vivid">Vivid HDR</div>
+            <div class="preset-filter-card" data-preset="vintage">Vintage 70s</div>
+            <div class="preset-filter-card" data-preset="cyberpunk">Cyberpunk</div>
+            <div class="preset-filter-card" data-preset="golden">Golden Hour</div>
+            <div class="preset-filter-card" data-preset="dramaticBW">Dramatic B&W</div>
+            <div class="preset-filter-card" data-preset="emerald">Emerald Matte</div>
+            <div class="preset-filter-card" data-preset="cinematic">Cinematic Teal</div>
+          </div>
+
+          <div style="font-size: 0.8rem; font-weight: 700; margin: 1.25rem 0 0.5rem; color: var(--text-muted);">Manual Sliders</div>
+
+          <div class="adjustment-slider-group">
+            <div class="adj-label-row"><span>Brightness</span><span id="lbl_brightness">0</span></div>
+            <input type="range" id="adj_brightness" min="-100" max="100" value="0">
+          </div>
+
+          <div class="adjustment-slider-group">
+            <div class="adj-label-row"><span>Contrast</span><span id="lbl_contrast">0</span></div>
+            <input type="range" id="adj_contrast" min="-100" max="100" value="0">
+          </div>
+
+          <div class="adjustment-slider-group">
+            <div class="adj-label-row"><span>Saturation</span><span id="lbl_saturation">0</span></div>
+            <input type="range" id="adj_saturation" min="-100" max="100" value="0">
+          </div>
+
+          <div class="adjustment-slider-group">
+            <div class="adj-label-row"><span>Warmth / Tint</span><span id="lbl_warmth">0</span></div>
+            <input type="range" id="adj_warmth" min="-100" max="100" value="0">
+          </div>
+
+          <div class="adjustment-slider-group">
+            <div class="adj-label-row"><span>Blur</span><span id="lbl_blur">0</span></div>
+            <input type="range" id="adj_blur" min="0" max="20" value="0" step="0.5">
+          </div>
+
+          <div class="adjustment-slider-group">
+            <div class="adj-label-row"><span>Sepia</span><span id="lbl_sepia">0</span></div>
+            <input type="range" id="adj_sepia" min="0" max="100" value="0">
+          </div>
+
+          <div class="adjustment-slider-group">
+            <div class="adj-label-row"><span>Hue Rotate</span><span id="lbl_hueRotate">0</span></div>
+            <input type="range" id="adj_hueRotate" min="0" max="360" value="0">
+          </div>
+        </div>
+
+        <!-- 7. AI Image Generator Drawer -->
+        <div id="dockPanel_generate" class="dock-drawer-panel hidden">
+          <div class="drawer-header">
+            <h3>AI Image Generator</h3>
+            <p>Describe your image and let PhotoXys render it instantly.</p>
+          </div>
+
+          <div class="dock-search-box">
+            <span>🎨</span>
+            <input type="text" id="generatePromptInput" placeholder="e.g. purple galaxy with neon stars">
+          </div>
+
+          <div class="inspector-field">
+            <label for="generateStyleSelect">Style Preset</label>
+            <select id="generateStyleSelect" class="inspector-select">
+              <option value="auto">✨ Auto Detect from Prompt</option>
+              <option value="abstract">Abstract Blobs</option>
+              <option value="gradient">Soft Gradient</option>
+              <option value="geometric">Geometric Pattern</option>
+              <option value="waves">Ocean Waves</option>
+              <option value="galaxy">Galaxy &amp; Stars</option>
+              <option value="cyberpunk">Cyberpunk Horizon</option>
+              <option value="sunset">Sunset</option>
+              <option value="mountain">Mountains</option>
+              <option value="ocean">Ocean</option>
+            </select>
+          </div>
+
+          <button id="generateImageBtn" class="btn-primary" style="width: 100%;">
+            ✨ Generate Image
+          </button>
+          <div id="generateStatus" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.6rem;"></div>
+        </div>
+
+        <!-- 8. Edit Tools Drawer (Magic Eraser + Crop) -->
+        <div id="dockPanel_edit" class="dock-drawer-panel hidden">
+          <div class="drawer-header">
+            <h3>Edit Tools</h3>
+            <p>Erase pixels from images or crop your document.</p>
+          </div>
+
+          <div class="edit-tool-grid">
+            <button id="magicEraserBtn" class="edit-tool-card">
+              <span class="edit-tool-icon">🧽</span>
+              <span>Magic Eraser</span>
+              <small>Erase pixels from an image layer</small>
+            </button>
+            <button id="cropToolBtn" class="edit-tool-card">
+              <span class="edit-tool-icon">✂️</span>
+              <span>Crop</span>
+              <small>Trim the document to a selection</small>
+            </button>
+          </div>
+
+          <div class="inspector-field" id="eraserSizeField" style="margin-top: 1rem;">
+            <div class="adj-label-row"><span>Eraser Size</span><span id="eraserSizeLabel">30px</span></div>
+            <input type="range" id="eraserSizeSlider" min="4" max="120" value="30">
+          </div>
+
+          <div class="edit-hint" id="editHint">Select a tool above, then use it on the canvas.</div>
+        </div>
+
+        <!-- 9. Brush & Draw Drawer -->
+        <div id="dockPanel_draw" class="dock-drawer-panel hidden">
+          <div class="drawer-header">
+            <h3>Brush & Painting</h3>
+            <p>Draw freehand vector paths on the canvas.</p>
+          </div>
+
+          <div class="inspector-field">
+            <label for="brushTypeSelect">Brush Type</label>
+            <select id="brushTypeSelect" class="inspector-select">
+              <option value="pen">Standard Pen</option>
+              <option value="neon">Neon Glow Brush</option>
+            </select>
+          </div>
+
+          <div class="inspector-field">
+            <div class="adj-label-row"><span>Brush Radius</span><span id="brushSizeLabel">10px</span></div>
+            <input type="range" id="brushSizeSlider" min="2" max="60" value="10">
+          </div>
+
+          <div class="inspector-field">
+            <label for="brushColorPicker">Brush Color</label>
+            <input type="color" id="brushColorPicker" class="color-picker-native" value="#4f46e5">
+          </div>
+        </div>
+      </aside>
+
+      <!-- Center Main Canvas Stage Viewport -->
+      <main class="studio-canvas-stage">
+        <canvas id="studioCanvas"></canvas>
+
+        <!-- Floating Crop Toolbar -->
+        <div id="cropToolbar" class="crop-toolbar hidden">
+          <span class="crop-toolbar-label">Drag on the canvas to select a crop area</span>
+          <button id="cropCancelBtn" class="btn-secondary">Cancel</button>
+          <button id="cropApplyBtn" class="btn-primary">Apply Crop</button>
+        </div>
+      </main>
+
+      <!-- Right Sidebar: Contextual Inspector & Layers Panel -->
+      <aside class="studio-right-sidebar">
+        <!-- Inspector Section -->
+        <div class="inspector-pane">
+          <div class="inspector-header">Layer Properties</div>
+
+          <div id="inspectorEmptyState" style="text-align: center; padding: 2rem 0; color: var(--text-muted);">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">👆</div>
+            <p style="font-size: 0.85rem;">Select any layer on the canvas to inspect and edit its properties.</p>
+          </div>
+
+          <div id="inspectorActiveState" class="hidden">
+            <div style="font-size: 0.82rem; font-weight: 800; margin-bottom: 0.75rem; color: var(--brand-primary);" id="inspectorLayerName">
+              Selected Layer
+            </div>
+
+            <!-- Text Specific Controls -->
+            <div id="inspectorTextGroup" class="hidden">
+              <div class="inspector-field">
+                <label for="inspectorTextContent">Text Content</label>
+                <input type="text" id="inspectorTextContent" class="inspector-input">
+              </div>
+
+              <div class="inspector-field">
+                <label for="inspectorFontFamily">Font Family</label>
+                <select id="inspectorFontFamily" class="inspector-select">
+                  <option value="Outfit">Outfit</option>
+                  <option value="Plus Jakarta Sans">Plus Jakarta Sans</option>
+                  <option value="Montserrat">Montserrat</option>
+                  <option value="Playfair Display">Playfair Display</option>
+                  <option value="Poppins">Poppins</option>
+                  <option value="JetBrains Mono">JetBrains Mono</option>
+                </select>
+              </div>
+
+              <div class="inspector-field" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                <div>
+                  <label for="inspectorFontSize">Font Size</label>
+                  <input type="number" id="inspectorFontSize" class="inspector-input" value="36">
+                </div>
+                <div>
+                  <label for="inspectorTextAlign">Alignment</label>
+                  <select id="inspectorTextAlign" class="inspector-select">
+                    <option value="center">Center</option>
+                    <option value="left">Left</option>
+                    <option value="right">Right</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Shape & Common Controls -->
+            <div id="inspectorShapeGroup">
+              <div class="inspector-field">
+                <label>Fill Color</label>
+                <div class="color-input-wrapper">
+                  <input type="color" id="inspectorFillColor" class="color-picker-native" value="#3b82f6">
+                </div>
+              </div>
+            </div>
+
+            <div class="inspector-field">
+              <label>Stroke & Outline</label>
+              <div class="color-input-wrapper" style="margin-bottom: 0.4rem;">
+                <input type="color" id="inspectorStrokeColor" class="color-picker-native" value="#000000">
+                <input type="range" id="inspectorStrokeWidth" min="0" max="24" value="0" style="flex-grow: 1;">
+              </div>
+            </div>
+
+            <div class="inspector-field">
+              <div class="adj-label-row"><span>Opacity</span><span id="inspectorOpacityLabel">100%</span></div>
+              <input type="range" id="inspectorOpacitySlider" min="0" max="1" step="0.05" value="1">
+            </div>
+
+            <div class="inspector-field">
+              <label for="inspectorBlendMode">Blend Mode (Photoshop)</label>
+              <select id="inspectorBlendMode" class="inspector-select">
+                <option value="source-over">Normal</option>
+                <option value="multiply">Multiply</option>
+                <option value="screen">Screen</option>
+                <option value="overlay">Overlay</option>
+                <option value="darken">Darken</option>
+                <option value="lighten">Lighten</option>
+                <option value="color-dodge">Color Dodge</option>
+              </select>
+            </div>
+
+            <div style="font-size: 0.78rem; font-weight: 700; margin: 1rem 0 0.5rem; color: var(--text-muted);">Layer Arrange</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; margin-bottom: 0.5rem;">
+              <button class="btn-secondary" style="padding: 0.35rem; font-size: 0.78rem;" id="bringFrontBtn">Bring Front</button>
+              <button class="btn-secondary" style="padding: 0.35rem; font-size: 0.78rem;" id="sendBackBtn">Send Back</button>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem;">
+              <button class="btn-secondary" style="padding: 0.35rem; font-size: 0.78rem;" id="duplicateSelectedBtn">Duplicate</button>
+              <button class="btn-secondary" style="padding: 0.35rem; font-size: 0.78rem; color: var(--brand-accent);" id="deleteSelectedBtn">Delete</button>
+            </div>
+
+            <div id="inspectorDeleteGroup" class="hidden" style="margin-top: 0.75rem;">
+              <button class="btn-danger-full" id="deleteSelectedBigBtn">Delete Layer</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Layers Panel -->
+        <div class="layers-pane">
+          <div class="layers-pane-header">
+            <span>Layers Stack</span>
+          </div>
+          <div class="layers-list" id="layersStackList">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- ================= PRO SUBSCRIPTION MODAL ================= -->
+  <div id="subscriptionModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <button class="modal-close-btn" id="closeSubscriptionModal" title="Close">✕</button>
+      <div class="modal-header-box" style="text-align: center;">
+        <h2>Unlock PhotoXys Pro 👑</h2>
+        <p>Unleash the full power of unlimited graphics, 4K exports, and AI tools.</p>
+      </div>
+
+      <div class="pricing-grid">
+        <!-- Free Tier -->
+        <div class="pricing-card">
+          <div class="plan-name">Free Tier</div>
+          <div class="plan-price">$0 <span>/ forever</span></div>
+          <ul class="plan-feature-list" style="list-style: none;">
+            <li>✓ Standard Canvas Studio</li>
+            <li>✓ Basic Shape & Sticker Library</li>
+            <li>✓ Standard 1080p Resolution</li>
+            <li>✗ AI Background Eraser</li>
+            <li>✗ 4K Ultra Print Exports</li>
+          </ul>
+          <button class="btn-secondary" style="width: 100%;" disabled>Current Plan</button>
+        </div>
+
+        <!-- Pro Creator Tier -->
+        <div class="pricing-card featured">
+          <div class="pricing-badge-top">Most Popular</div>
+          <div class="plan-name">Pro Creator</div>
+          <div class="plan-price">$9.99 <span>/ month</span></div>
+          <ul class="plan-feature-list" style="list-style: none;">
+            <li>✓ <strong>All 50+ Premium Stickers & Badges</strong></li>
+            <li>✓ <strong>4K & 8K Ultra-Res Downloads</strong></li>
+            <li>✓ <strong>Unlimited Layer History & Fonts</strong></li>
+            <li>✓ <strong>AI Background Remover</strong></li>
+            <li>✓ <strong>Commercial License Included</strong></li>
+          </ul>
+          <button class="btn-primary" id="confirmUpgradeProBtn" style="width: 100%; background: linear-gradient(135deg, #ec4899, #8b5cf6);">
+            Upgrade to Pro Now 🚀
+          </button>
+        </div>
+      </div>
+
+      <div style="text-align: center; font-size: 0.78rem; color: var(--text-muted);">
+        Cancel anytime with 1-click. 14-day money-back guarantee.
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= EXPORT MODAL ================= -->
+  <div id="exportModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <button class="modal-close-btn" id="closeExportModal" title="Close">✕</button>
+      <div class="modal-header-box">
+        <h2>Export Your Artwork</h2>
+        <p>Choose your file format and resolution for download.</p>
+      </div>
+
+      <div class="inspector-field">
+        <label for="exportFormatSelect">File Format</label>
+        <select id="exportFormatSelect" class="inspector-select">
+          <option value="png">PNG (Best for Web & Graphics with Alpha)</option>
+          <option value="jpeg">JPEG (Compact File Size)</option>
+          <option value="webp">WebP (Modern Next-Gen Web)</option>
+        </select>
+      </div>
+
+      <div class="inspector-field">
+        <label for="exportScaleSelect">Resolution Quality</label>
+        <select id="exportScaleSelect" class="inspector-select">
+          <option value="1">1x Standard Screen Resolution</option>
+          <option value="2">2x High-Density Retina (2x Output)</option>
+          <option value="3">3x Ultra High-Res Print Quality (3x Output)</option>
+        </select>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+        <button class="btn-secondary" onclick="document.getElementById('exportModal').classList.add('hidden')">Cancel</button>
+        <button class="btn-primary" id="confirmDownloadBtn">Download Artwork 🚀</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Core Scripts -->
+  <script src="filters.js"></script>
+  <script src="generator.js"></script>
+  <script src="canvas-engine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
